@@ -115,7 +115,6 @@ async def generate_collective_response(user_id : str = Query(...)):
     # import asyncio
     # asyncio.run(test_agent())
 
-
 #Second agent which turns the collective dreams into an image.
 @app.get("/dream-generate/user")
 async def generate_collective_image(user_id : str = Query(...)):
@@ -126,3 +125,4 @@ async def generate_collective_image(user_id : str = Query(...)):
         return {"error":"No dreams found for this user."}
 
     combined_dreams = "\n\n".join(d['text'] for d in dreams)
+
