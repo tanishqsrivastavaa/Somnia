@@ -31,11 +31,11 @@ model1 = GroqModel(model_name = "llama-3.3-70b-versatile",provider = GroqProvide
 first_agent = Agent(model=model1)
 
 #HuggingFace for image generation
-model2=InferenceClient(
-    provider="HiDream-ai",
-    api_key=HF_API_KEY,
-    model='HiDream-I1-Full'
-)
+# model2=InferenceClient(
+#     provider="HiDream-ai",
+#     api_key=HF_API_KEY,
+#     model='HiDream-I1-Full'
+# )
 
 # Data Model
 class Dream(BaseModel):
