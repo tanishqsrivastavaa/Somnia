@@ -189,6 +189,23 @@ wheels = [
 ]
 
 [[package]]
+name = "cerebras-cloud-sdk"
+version = "1.28.0"
+source = { registry = "https://pypi.org/simple" }
+dependencies = [
+    { name = "anyio" },
+    { name = "distro" },
+    { name = "httpx" },
+    { name = "pydantic" },
+    { name = "sniffio" },
+    { name = "typing-extensions" },
+]
+sdist = { url = "https://files.pythonhosted.org/packages/a5/44/7ff381db463f5bc1c13f5450527c27bd914e5dcfdbffe1197fadcd9c6019/cerebras_cloud_sdk-1.28.0.tar.gz", hash = "sha256:eae550b15337953f6c78590adc724291defbd126f8f3994731f02c6df3464870", size = 110570 }
+wheels = [
+    { url = "https://files.pythonhosted.org/packages/31/a9/9db64b0d047fa9db4230d82f4c065c199c1d08cd5211bb0b31afd211f5ec/cerebras_cloud_sdk-1.28.0-py3-none-any.whl", hash = "sha256:0daae0094b63a9faef5a7ee6c394c0ec86bae387fe99d86b8bd6f1685b4b691e", size = 88235 },
+]
+
+[[package]]
 name = "certifi"
 version = "2025.1.31"
 source = { registry = "https://pypi.org/simple" }
@@ -1987,6 +2004,7 @@ name = "somnia"
 version = "0.1.0"
 source = { virtual = "." }
 dependencies = [
+    { name = "cerebras-cloud-sdk" },
     { name = "faiss-cpu" },
     { name = "fastapi" },
     { name = "pydantic" },
@@ -1999,6 +2017,7 @@ dependencies = [
 
 [package.metadata]
 requires-dist = [
+    { name = "cerebras-cloud-sdk", specifier = ">=1.28.0" },
     { name = "faiss-cpu", specifier = ">=1.10.0" },
     { name = "fastapi", specifier = ">=0.115.12" },
     { name = "pydantic", specifier = ">=2.11.2" },
