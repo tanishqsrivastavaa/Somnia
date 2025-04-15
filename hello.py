@@ -1,22 +1,26 @@
-import supabase
-import vecs
 from dotenv import load_dotenv
 import os
-load_dotenv()
+from together import Together
+import requests
 
-db_key = os.getenv("SUPABASE_KEY")
-sp_url = os.getenv("SUPABASE_URL")
+load_dotenv()  # Load environment variables from .env
 
-client = supabase.create_client(supabase_key=db_key,supabase_url=sp_url)
+# TOGETHER_API_KEY = os.getenv("TOGETHER_API_KEY")
 
-#client.table("dream").insert({"user_id":"20","text":"I could feel the soothing silk wipe off my hands"}).execute()
-client.table("dream").insert({
-    "user_id":"222",
-    "text":"testing the embedding",
-    "embedding":[0.5,0.25,-0.09]
-    }
-    ).execute()
+client = Together()
+
+image = client.images.generate(
+    prompt="Cats eating popcorn",
+    model="black-forest-labs/FLUX.1-schnell-Free",
+    steps=2,
+    n=1,
+    format = "jpeg"
+)
 
 
-data = client.table("dream").select("").execute()
-print(data.data)
+
+url = image.data[0].url
+response = requests.get(url)
+
+with open("output.jpg", "wb") as f:
+    f.write(response.content)
