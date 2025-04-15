@@ -10,7 +10,8 @@ from dotenv import load_dotenv
 import os
 import asyncio
 from uuid import uuid4
-
+from together import Together
+import requests
 load_dotenv()
 
 
@@ -21,7 +22,6 @@ db_key = os.getenv("SUPABASE_KEY")
 sp_url = os.getenv("SUPABASE_URL")
 GROQ_API_KEY = os.getenv("GROQ_API_KEY")
 HF_API_KEY = os.getenv("HF_API_KEY")
-
 supabase_client = supabase.create_client(sp_url,db_key)
 
 
@@ -37,6 +37,9 @@ model2=InferenceClient(
     api_key=HF_API_KEY,
     model="HiDream-ai/HiDream-I1-Full"
 )
+
+image_client = Together()
+
 
 # Data Model
 class Dream(BaseModel):
@@ -130,15 +133,46 @@ async def generate_collective_image(user_id : str = Query(...)):
     prompt = f"""
     You are a surreal storyteller. Here's a set of dreams:
     {combined_dreams}
-    Turn it into a brief, vivid, visual description in 1-2 sentences for an artist to paint.
+    Turn it into a visual, animative description in 1-2 sentences for an artist to paint.
     Be abstract and expressive.
     """
 
     summarized = await first_agent.run(prompt)
     dream_description = summarized.data.strip()
 
-    image = model2.text_to_image(dream_description)
-    file_path = f"{uuid4().hex}.png"
-    image.save(file_path)
+    # image = model2.text_to_image(dream_description)
+    # file_path = f"{uuid4().hex}.png"
+    # image.save(file_path)
+    # return FileResponse(file_path,media_type="image/png")
+    image = image_client.images.generate(
+        prompt=dream_description,
+        model="black-forest-labs/FLUX.1-schnell-Free",
+        steps=2,
+        n=1,
+        height=1024,
+        width=1024,
+        format="jpeg"
+)
+
+    url = image.data[0].url
+    response = requests.get(url)
+
+    files = os.listdir()
+    dream_images = [f for f in files if f.startswith("dream_image_") and f.endswith(".png")]
+    numbers = []
+    for name in dream_images:
+        try:
+            num = int(name.split("_")[-1].split(".")[0])
+            numbers.append(num)
+        except ValueError:
+            continue
+
+    next_num = max(numbers) + 1 if numbers else 1
+    file_path = f"dream_images_{next_num}.png"
+
+    with open("dream_image.png", "wb") as f:
+        f.write(response.content)
+
     return FileResponse(file_path,media_type="image/png")
-#
+
+    
