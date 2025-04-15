@@ -140,4 +140,5 @@ async def generate_collective_image(user_id : str = Query(...)):
     image = model2.text_to_image(dream_description)
     file_path = f"{uuid4().hex}.png"
     image.save(file_path)
-    return FileResponse(file_path,media_type="im    age/png")
+    return FileResponse(file_path,media_type="image/png")
+#
