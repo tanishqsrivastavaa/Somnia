@@ -1,4 +1,5 @@
 from fastapi import FastAPI, Query
+from fastapi.responses import FileResponse
 from pydantic import BaseModel
 import supabase
 from pydantic_ai.agent import Agent
@@ -30,12 +31,12 @@ supabase_client = supabase.create_client(sp_url,db_key)
 model1 = GroqModel(model_name = "llama-3.3-70b-versatile",provider = GroqProvider(api_key = GROQ_API_KEY))
 first_agent = Agent(model=model1)
 
-#HuggingFace for image generation
-# model2=InferenceClient(
-#     provider="HiDream-ai",
-#     api_key=HF_API_KEY,
-#     model='HiDream-I1-Full'
-# )
+# HuggingFace for image generation
+model2=InferenceClient(
+    provider="fal-ai",
+    api_key=HF_API_KEY,
+    model="HiDream-ai/HiDream-I1-Full"
+)
 
 # Data Model
 class Dream(BaseModel):
@@ -125,4 +126,18 @@ async def generate_collective_image(user_id : str = Query(...)):
         return {"error":"No dreams found for this user."}
 
     combined_dreams = "\n\n".join(d['text'] for d in dreams)
+    
+    prompt = f"""
+    You are a surreal storyteller. Here's a set of dreams:
+    {combined_dreams}
+    Turn it into a brief, vivid, visual description in 1-2 sentences for an artist to paint.
+    Be abstract and expressive.
+    """
 
+    summarized = await first_agent.run(prompt)
+    dream_description = summarized.data.strip()
+
+    image = model2.text_to_image(dream_description)
+    file_path = f"{uuid4().hex}.png"
+    image.save(file_path)
+    return FileResponse(file_path,media_type="im    age/png")
