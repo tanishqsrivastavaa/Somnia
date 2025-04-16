@@ -157,6 +157,8 @@ async def generate_collective_image(user_id : str = Query(...)):
     url = image.data[0].url
     response = requests.get(url)
 
+    response2 = supabase_client.table("dreams").insert(url).execute()
+    
     files = os.listdir()
     dream_images = [f for f in files if f.startswith("dream_image_") and f.endswith(".png")]
     numbers = []
@@ -173,6 +175,11 @@ async def generate_collective_image(user_id : str = Query(...)):
     with open("dream_image.png", "wb") as f:
         f.write(response.content)
 
+
     return FileResponse(file_path,media_type="image/png")
 
-    
+
+'''TODO
+1. Should append the image url into supabase
+2. Re-format the code for better code quality
+3. Make the front-end (use deepseek)'''
