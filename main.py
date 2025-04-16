@@ -149,15 +149,10 @@ async def generate_collective_image(user_id : str = Query(...)):
         format="jpeg"
 )
 
-
-
-
-
-
     url = image.data[0].url
     response = requests.get(url)
 
-    response2 = supabase_client.table("dreams").insert(url).execute()
+    ()
 
     files = os.listdir()
     dream_images = [f for f in files if f.startswith("dream_image_") and f.endswith(".png")]
@@ -169,18 +164,24 @@ async def generate_collective_image(user_id : str = Query(...)):
         except ValueError:
             continue
 
-    next_num = max(numbers) + 1 if numbers else 1
-    file_path = f"dream_images_{next_num}.png"
+    # next_num = max(numbers) + 1 if numbers else 1
+    # file_path = f"dream_images_{next_num}.png"
 
-    with open("dream_image.png", "wb") as f:
-        f.write(response.content)
+    # with open(file_path, "wb") as f:
+    #     f.write(response.content)
 
+    latest_dream_response = supabase_client.table("dreams").select("id").eq("user_id", user_id).order("created_at", desc=True).limit(1).execute()
+    if not latest_dream_response.data:
+        return {"error": "No dreams found to update with image."}
+    
+    dream_id = latest_dream_response.data[0]['id']
+    supabase_client.table("dreams").update({"dream_image": url}).eq("id", dream_id).execute()
+    # return FileResponse(file_path,media_type="image/png")
 
-    return FileResponse(file_path,media_type="image/png")
 
 
 # '''TODO
-# 1. Should append the image url into supabase
+# 1. Should append the image url into supabase DONE
 # 2. Re-format the code for better code quality
 # 3. Make the front-end (use deepseek)'''
 #lol
