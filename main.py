@@ -183,3 +183,4 @@ async def generate_collective_image(user_id : str = Query(...)):
 # 1. Should append the image url into supabase
 # 2. Re-format the code for better code quality
 # 3. Make the front-end (use deepseek)'''
+#lol
