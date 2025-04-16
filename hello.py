@@ -24,3 +24,4 @@ response = requests.get(url)
 
 with open("output.jpg", "wb") as f:
     f.write(response.content)
+#

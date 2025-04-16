@@ -149,6 +149,11 @@ async def generate_collective_image(user_id : str = Query(...)):
         format="jpeg"
 )
 
+
+
+
+
+
     url = image.data[0].url
     response = requests.get(url)
 
