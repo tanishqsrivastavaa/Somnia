@@ -31,13 +31,8 @@ supabase_client = supabase.create_client(sp_url,db_key)
 model1 = GroqModel(model_name = "llama-3.3-70b-versatile",provider = GroqProvider(api_key = GROQ_API_KEY))
 first_agent = Agent(model=model1)
 
-# HuggingFace for image generation
-model2=InferenceClient(
-    provider="fal-ai",
-    api_key=HF_API_KEY,
-    model="HiDream-ai/HiDream-I1-Full"
-)
 
+#Image gen agent
 image_client = Together()
 
 
