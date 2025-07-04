@@ -12,6 +12,7 @@ dependencies = [
     "pydantic-ai>=0.0.52",
     "sentence-transformers>=4.0.2",
     "supabase>=2.15.0",
+    "together>=1.5.17",
     "torch>=2.6.0",
     "vecs>=0.4.5",
 ]

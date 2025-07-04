@@ -5,7 +5,7 @@ import supabase
 from pydantic_ai.agent import Agent
 from pydantic_ai.models.groq import GroqModel
 from pydantic_ai.providers.groq import GroqProvider
-from huggingface_hub import InferenceClient
+# from huggingface_hub import InferenceClient
 from dotenv import load_dotenv
 import os
 import asyncio
@@ -20,8 +20,9 @@ app = FastAPI() #uvicorn main:app --reload
 
 db_key = os.getenv("SUPABASE_KEY")
 sp_url = os.getenv("SUPABASE_URL")
+TOGETHER_API_KEY = os.getenv("TOGETHER_API_KEY")
 GROQ_API_KEY = os.getenv("GROQ_API_KEY")
-HF_API_KEY = os.getenv("HF_API_KEY")
+# HF_API_KEY = os.getenv("HF_API_KEY")
 supabase_client = supabase.create_client(sp_url,db_key)
 
 
@@ -29,7 +30,7 @@ supabase_client = supabase.create_client(sp_url,db_key)
 
 #GroqAPI
 model1 = GroqModel(model_name = "llama-3.3-70b-versatile",provider = GroqProvider(api_key = GROQ_API_KEY))
-first_agent = Agent(model=model1)
+base_agent = Agent(model=model1)
 
 
 #Image gen agent
@@ -63,8 +64,8 @@ async def save_dream(dream: Dream):
             {dream.text}
             Make it immersive, flow like a dream, and avoid any analysis or explanations. Just narrate as if you're recounting the dream."""
     
-    structured_result = await first_agent.run(prompt)
-    structured_text = structured_result.data
+    structured_result = await base_agent.run(prompt)
+    structured_text = structured_result.output
     new_dream = {
         "id":str(uuid4()),
         "user_id":dream.user_id,
@@ -98,15 +99,15 @@ async def generate_collective_response(user_id : str = Query(...)):
     - The format should be in **first person**.
     - Make it immersive and continuous, as if it was one long night of dreaming.
     - Do not explain. Just narrate the dream directly.
-    - Make sure it is about 100-200 words."""
+    - Make sure it is about 100 words long."""
 
-    ai_response = await first_agent.run(prompt)
+    ai_response = await base_agent.run(prompt)
     # supabase_client.table("dreams").select("response").
     return {"response": ai_response}
 
 # '''Testing agent's response'''
 # async def test_agent():
-#     response = await first_agent.run("Describe a surreal dream about a floating city.")
+#     response = await base_agent.run("Describe a surreal dream about a floating city.")
 #     print(response)
 
 
@@ -132,8 +133,8 @@ async def generate_collective_image(user_id : str = Query(...)):
     Be abstract and expressive.
     """
 
-    summarized = await first_agent.run(prompt)
-    dream_description = summarized.data.strip()
+    summarized = await base_agent.run(prompt)
+    dream_description = summarized.output.strip()
 
     # image = model2.text_to_image(dream_description)
     # file_path = f"{uuid4().hex}.png"
